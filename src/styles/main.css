@@ -1,4 +1,53 @@
-$b: #123FFF;
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web');
+
+
+$bg-primary: #1e1e1e;
+$bg-secondary: #393939;
+$bg-game: #eee;
+
+$fs-base: 20px;
+$fs-h1: 3em;
+$fs-h2: 1.85em;
+
+$fc-primary: $bg-game;
+$fc-secondary: #b5ab9e;
+
+$ff-primary: 'Titillium Web', sans-serif;
+
+* {
+	padding:0;
+	margin: 0;
+}
+
 body {
-	background:$b;
+	background: $bg-primary;
+	font-family: $ff-primary;
+}
+
+.header {
+	background: $bg-secondary;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	&__title {
+		margin: 0 auto;
+		font-size: $fs-h1;
+		color: $fc-primary;
+		text-transform: uppercase;
+		letter-spacing: 0.35em;
+		line-height: 1.75em;
+	}
+	&__subtitle {
+		color: $fc-secondary;
+		letter-spacing: 0.125em;
+		line-height: 1.5em;
+	}
+}
+
+.game-canvas {
+	background: $bg-game;
+	display: block;
+	margin: 0 auto;
 }

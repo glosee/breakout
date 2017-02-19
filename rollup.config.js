@@ -7,7 +7,6 @@ import simplevars from 'postcss-simple-vars';
 import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 
-
 export default {
 	entry: 'src/index.js',
 	dest: 'dist/bundle.js',
