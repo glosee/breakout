@@ -7,7 +7,8 @@
     "build": "./node_modules/.bin/rollup -c",
     "watch": "./node_modules/.bin/rollup -c --watch",
     "reload": "./node_modules/.bin/livereload './dist/'",
-    "dev": "./node_modules/.bin/npm-run-all --parallel watch reload"
+    "server": "./node_modules/.bin/http-server ./dist/ -p 8080",
+    "dev": "./node_modules/.bin/npm-run-all --parallel watch reload server"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
+    "http-server": "^0.9.0",
     "livereload": "^0.6.0",
     "npm-run-all": "^4.0.1",
     "postcss-cssnext": "^2.9.0",
