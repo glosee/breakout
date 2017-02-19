@@ -49,5 +49,5 @@ body {
 .game-canvas {
 	background: $bg-game;
 	display: block;
-	margin: 0 auto;
+	margin: 3em auto;
 }
