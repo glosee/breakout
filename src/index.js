@@ -1,5 +1,6 @@
 import './styles/main.css';
-import sayHello from './modules/say-hello';
+
+import startGame from './modules/game.js';
 
 if (ENV !== 'production') {
 	// Enable livereload
@@ -8,6 +9,6 @@ if (ENV !== 'production') {
 	document.body.appendChild(lrScript);
 }
 
-const p = document.createElement('p');
-p.innerHTML = sayHello('dfhaksjfhal');
-document.body.appendChild(p);
+// Get the canvs element to draw the game into
+const canvas = document.getElementById('main');
+startGame(canvas);
