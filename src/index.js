@@ -1,4 +1,4 @@
-import sayHello from './modules/say-hello.js';
+import sayHello from './modules/say-hello';
 
 const p = document.createElement('p');
 p.innerHTML = sayHello('hellloooooooouuuuuu');
