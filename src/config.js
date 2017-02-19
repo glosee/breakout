@@ -6,5 +6,8 @@ export default {
 		ball: {
 			base: '#1e1e1e',
 		}
-	}
+	},
+	ball: {
+		radius: 10,
+	},
 };
