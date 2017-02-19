@@ -1,0 +1,4 @@
+$b: #123999;
+body {
+	background:$b;
+}

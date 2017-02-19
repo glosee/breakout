@@ -1,3 +1,4 @@
+import './styles/main.css';
 import sayHello from './modules/say-hello';
 
 const p = document.createElement('p');
