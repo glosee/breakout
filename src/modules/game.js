@@ -8,10 +8,18 @@ import config from '../config.js';
  * @returns {function} - A function that accepts an object with x, y, and radius values
  * with which to draw circle into the originally passed in context.
  */
-const drawCircle = (ctx) => ({ x, y, r }) => {
+const drawCircle = ctx => ({ x, y, r }) => {
 	ctx.beginPath();
 	ctx.arc(x, y, r, 0, Math.PI * 2);
 	ctx.fillStyle = config.colors.ball.base;
+	ctx.fill();
+	ctx.closePath();
+};
+
+const drawRect = ctx => ({ x, y, w, h }) => {
+	ctx.beginPath();
+	ctx.rect(x, y, w, h);
+	ctx.fillStyle = config.colors.paddle.base;
 	ctx.fill();
 	ctx.closePath();
 };
@@ -43,23 +51,47 @@ const clearFrame = (ctx, { w, h }) => () => {
 const draw = (ctx, state) => {
 	const frameRate = 2;
 
-	let dx = frameRate;
-	let dy = -frameRate;
+	let bx = frameRate;
+	let by = -frameRate;
+	let px = 7;
 
 	const clear = clearFrame(ctx, state.canvasSize);
 	const drawBall = drawCircle(ctx);
+	const drawPaddle = drawRect(ctx);
+
+	document.addEventListener('keydown', e => {
+		if (e.keyCode === 39) {
+			state.user.keys.right = true;
+		} else if (e.keyCode === 37) {
+			state.user.keys.left = true;
+		}
+	});
+
+	document.addEventListener('keyup', e => {
+		if (e.keyCode === 39) {
+			state.user.keys.right = false;
+		} else if (e.keyCode === 37) {
+			state.user.keys.left = false;
+		}
+	});
 
 	const nextState = () => {
-		const { ball, canvasSize } = state;
+		const { ball, canvasSize, user, paddle } = state;
 		// If the ball hits the wall on any side of the canvas then reverse direction on that axis
-		if (ball.x + dx > canvasSize.w - ball.r || ball.x + dx < ball.r) {
-			dx = -dx;
+		if (ball.x + bx > canvasSize.w - ball.r || ball.x + bx < ball.r) {
+			bx = -bx;
 		}
-		if (ball.y + dy > canvasSize.h - ball.r || ball.y + dy < ball.r) {
-			dy = -dy;
+		if (ball.y + by > canvasSize.h - ball.r || ball.y + by < ball.r) {
+			by = -by;
 		}
-		state.ball.x += dx;
-		state.ball.y += dy;
+		state.ball.x += bx;
+		state.ball.y += by;
+		// If the user is pressing a key then move the paddle
+		if (user.keys.right && paddle.x < canvasSize.w - paddle.w) {
+			state.paddle.x += px;
+		} else if (user.keys.left && paddle.x > 0) {
+			state.paddle.x -= px;
+		}
 		return state;
 	};
 
@@ -67,6 +99,7 @@ const draw = (ctx, state) => {
 		clear();
 		const next = nextState();
 		drawBall(next.ball);
+		drawPaddle(next.paddle);
 	};
 };
 
@@ -82,9 +115,21 @@ const initialState = canvas => ({
 		y: canvas.height - 30,
 		r: config.ball.radius,
 	},
+	paddle: {
+		w: 75,
+		h: 10,
+		x: ((canvas.width - 75) / 2),
+		y: (canvas.height - 20),
+	},
 	canvasSize: {
 		w: canvas.width,
 		h: canvas.height,
+	},
+	user: {
+		keys: {
+			right: false,
+			left: false,
+		},
 	},
 });
 

@@ -5,7 +5,10 @@ export default {
 		],
 		ball: {
 			base: '#1e1e1e',
-		}
+		},
+		paddle: {
+			base: '#595959',
+		},
 	},
 	ball: {
 		radius: 10,
