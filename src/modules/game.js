@@ -75,14 +75,20 @@ const draw = (ctx, state) => {
 		}
 	});
 
-	const nextState = () => {
+	const nextFrame = () => {
 		const { ball, canvasSize, user, paddle } = state;
 		// If the ball hits the wall on any side of the canvas then reverse direction on that axis
 		if (ball.x + bx > canvasSize.w - ball.r || ball.x + bx < ball.r) {
 			bx = -bx;
 		}
-		if (ball.y + by > canvasSize.h - ball.r || ball.y + by < ball.r) {
+		if (ball.y + by < ball.r) {
 			by = -by;
+		} else if (ball.y + by > canvasSize.h - ball.r) {
+			if (ball.x > paddle.x && ball.x < paddle.x + paddle.w) {
+				by = -by;
+			} else {
+				window.location.reload();
+			}
 		}
 		state.ball.x += bx;
 		state.ball.y += by;
@@ -95,9 +101,10 @@ const draw = (ctx, state) => {
 		return state;
 	};
 
+	// This method is designed to run inside `setInterval` to draw the game at its current state on every frame.
 	return () => {
 		clear();
-		const next = nextState();
+		const next = nextFrame();
 		drawBall(next.ball);
 		drawPaddle(next.paddle);
 	};
