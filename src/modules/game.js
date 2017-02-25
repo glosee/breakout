@@ -1,42 +1,5 @@
 import config from '../config.js';
-
-/**
- * Takes a canvas context and returns a function that takes an object of params to use
- * to draw a circle into the originally passed in context.
- *
- * @param {canvasContext} ctx - The context from a canvas DOM element
- * @returns {function} - A function that accepts an object with x, y, and radius values
- * with which to draw circle into the originally passed in context.
- */
-const drawCircle = ctx => ({ x, y, r }) => {
-	ctx.beginPath();
-	ctx.arc(x, y, r, 0, Math.PI * 2);
-	ctx.fillStyle = config.colors.ball.base;
-	ctx.fill();
-	ctx.closePath();
-};
-
-const drawRect = ctx => ({ x, y, w, h }) => {
-	ctx.beginPath();
-	ctx.rect(x, y, w, h);
-	ctx.fillStyle = config.colors.paddle.base;
-	ctx.fill();
-	ctx.closePath();
-};
-
-/**
- * Takes a context and an object with w and h values for the canvas that you want to clear,
- * and returns a curried function that will clear the canvas context so you can draw the next frame.
- *
- * @param {canvasContext} ctx - The context for which you want to clear
- * @param {object} {w, h} - An object with the width and height of the canvas that holds the context
- * you want to clear.
- * @returns {function} - A curried function that you can call anywhere to clear the context without
- * having to retain a reference to it.
- */
-const clearFrame = (ctx, { w, h }) => () => {
-	ctx.clearRect(0, 0, w, h);
-};
+import { clearFrame, drawCircle, drawRect, getBrickPos } from '../utils/drawing-utils.js';
 
 /**
  * Takes a context and an initial state to curry into another function that works as the game loop.
@@ -51,6 +14,7 @@ const clearFrame = (ctx, { w, h }) => () => {
 const draw = (ctx, state) => {
 	const frameRate = 2;
 
+	// movement rates for game elements
 	let bx = frameRate;
 	let by = -frameRate;
 	let px = 7;
@@ -58,6 +22,15 @@ const draw = (ctx, state) => {
 	const clear = clearFrame(ctx, state.canvasSize);
 	const drawBall = drawCircle(ctx);
 	const drawPaddle = drawRect(ctx);
+	const drawBrick = drawRect(ctx);
+
+	const drawBricks = () => {
+		for (let c = 0; c < state.bricks.colCount; c++) {
+			for (let r = 0; r < state.bricks.rowCount; r++) {
+				drawBrick(Object.assign({}, getBrickPos(c, r), config.brick));
+			}
+		}
+	};
 
 	document.addEventListener('keydown', e => {
 		if (e.keyCode === 39) {
@@ -107,6 +80,7 @@ const draw = (ctx, state) => {
 		const next = nextFrame();
 		drawBall(next.ball);
 		drawPaddle(next.paddle);
+		drawBricks();
 	};
 };
 
@@ -131,6 +105,10 @@ const initialState = canvas => ({
 	canvasSize: {
 		w: canvas.width,
 		h: canvas.height,
+	},
+	bricks: {
+		rowCount: 3,
+		colCount: 5,
 	},
 	user: {
 		keys: {
