@@ -21,5 +21,7 @@ export default {
 		padding: 10,
 		offsetTop: 30,
 		offsetLeft: 30,
+		rowCount: 3,
+		colCount: 5,
 	},
 };

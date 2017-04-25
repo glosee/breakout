@@ -25,9 +25,12 @@ const draw = (ctx, state) => {
 	const drawBrick = drawRect(ctx);
 
 	const drawBricks = () => {
-		for (let c = 0; c < state.bricks.colCount; c++) {
-			for (let r = 0; r < state.bricks.rowCount; r++) {
-				drawBrick(Object.assign({}, getBrickPos(c, r), config.brick));
+		for (let c = 0; c < config.brick.colCount; c++) {
+			state.bricks[c] = [];
+			for (let r = 0; r < config.brick.rowCount; r++) {
+				const brick = Object.assign({}, getBrickPos(c, r), { w: config.brick.w, h: config.brick.h });
+				drawBrick(brick);
+				state.bricks[c][r] = brick;
 			}
 		}
 	};
@@ -91,6 +94,7 @@ const draw = (ctx, state) => {
  * @returns {object} - The intended initial state of the game.
  */
 const initialState = canvas => ({
+	bricks: [],
 	ball: {
 		x: canvas.width / 2,
 		y: canvas.height - 30,
@@ -105,10 +109,6 @@ const initialState = canvas => ({
 	canvasSize: {
 		w: canvas.width,
 		h: canvas.height,
-	},
-	bricks: {
-		rowCount: 3,
-		colCount: 5,
 	},
 	user: {
 		keys: {
