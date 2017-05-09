@@ -2,13 +2,15 @@ import config from '../config.js';
 import { clearFrame, drawCircle, drawRect, getBrickPos } from '../utils/drawing-utils.js';
 
 /**
- * Takes a context and an initial state to curry into another function that works as the game loop.
- * Curries other `clearFrame` and `drawCircle` functions to be able to run them cleanly each tick.
- * Every tick calculates the next state by increasing values in the initial state by the frameRate
- * (amongst other calculations and values). The function this returns is meant to be passed into
- * `setInterval` or `requestAnimationFrame`.
+ * Takes a context and an initial state to curry into another function tha
+ * works as the game loop. Curries other `clearFrame` and `drawCircle`
+ * functions to be able to run them cleanly each tick. Every tick calculates
+ * the next state by increasing values in the initial state by the frameRate
+ * (amongst other calculations and values). The function this returns is meant
+ * to be passed into `setInterval` or `requestAnimationFrame`.
  *
- * @param {canvasContext} ctx - The context of the canvas that you want to draw the game into.
+ * @param {canvasContext} ctx - The context of the canvas that you want to draw
+ * the game into.
  * @param {object} state - The initial state of the game.
  */
 const draw = (ctx, state) => {
