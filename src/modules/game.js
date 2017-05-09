@@ -26,24 +26,14 @@ const draw = (ctx, state) => {
 	const drawPaddle = drawRect(ctx);
 	const drawBrick = drawRect(ctx);
 
-	const drawBricks = () => {
-		for (let c = 0; c < config.brick.colCount; c++) {
-			state.bricks[c] = [];
-			for (let r = 0; r < config.brick.rowCount; r++) {
-				const brick = Object.assign(
-					{},
-					(state.bricks[c] && state.bricks[c][r]) ? state.bricks[c][r] : getBrickPos(c, r),
-					{
-						w: config.brick.w,
-						h: config.brick.h,
-					}
-				);
+	const drawBricks = (bricks) => {
+		bricks.forEach(column => {
+			return column.forEach(brick => {
 				if (brick.status > 0) {
 					drawBrick(brick);
 				}
-				state.bricks[c][r] = brick;
-			}
-		}
+			});
+		});
 	};
 
 	document.addEventListener('keydown', e => {
@@ -62,25 +52,30 @@ const draw = (ctx, state) => {
 		}
 	});
 
-	const brickCollision = (ball) => {
-		for (let c = 0; c < state.bricks.length; c++) {
-			for (let r = 0; r < state.bricks[c].length; r++) {
-				const brick = state.bricks[c] && state.bricks[c][r];
-				if (!brick) {
-					return;
-				}
+
+	/**
+	 *
+	 */
+	const brickCollision = ({ball, bricks}) => {
+		if (!bricks) {
+			return;
+		}
+		return bricks.map(column => {
+			return column.map(brick => {
 				if (
-					ball.x > brick.x &&
-					ball.x < brick.x + brick.w &&
-					ball.y > brick.y &&
-					ball.y < brick.y + brick.h
+						brick.status > 0 &&
+						ball.x > brick.x &&
+						ball.x < brick.x + brick.w &&
+						ball.y > brick.y &&
+						ball.y < brick.y + brick.h
 				) {
 					console.log('hit a brick!', brick);
 					by = -by;
-					state.bricks[c][r].status = 0;
+					return Object.assign(brick, { status: 0 });
 				}
-			}
-		}
+				return brick;
+			});
+		});
 	};
 
 	const nextFrame = () => {
@@ -97,9 +92,7 @@ const draw = (ctx, state) => {
 			if (ball.x > paddle.x && ball.x < paddle.x + paddle.w) {
 				by = -by;
 			} else {
-				// window.location.reload();
-				// alert('game over');
-				console.warn('game over...');
+				window.location.reload();
 			}
 		}
 		state.ball.x += bx;
@@ -110,7 +103,8 @@ const draw = (ctx, state) => {
 		} else if (user.keys.left && paddle.x > 0) {
 			state.paddle.x -= px;
 		}
-		brickCollision(state.ball);
+		state.bricks = brickCollision(state);
+		// console.log(state.bricks);
 		return state;
 	};
 
@@ -124,6 +118,27 @@ const draw = (ctx, state) => {
 	};
 };
 
+const generateBricks = () => {
+	const ret = [];
+	for (let c = 0; c < config.brick.colCount; c++) {
+		ret[c] = [];
+		for (let r = 0; r < config.brick.rowCount; r++) {
+			const brick = Object.assign(
+				{},
+				getBrickPos(c, r),
+				{
+					w: config.brick.w,
+					h: config.brick.h,
+					status: 1,
+				}
+			);
+			ret[c][r] = brick;
+		}
+	}
+	return ret;
+};
+
+
 /**
  * Creates the initial state for the game based on the size of the canvas element passed in.
  *
@@ -131,7 +146,7 @@ const draw = (ctx, state) => {
  * @returns {object} - The intended initial state of the game.
  */
 const initialState = canvas => ({
-	bricks: [],
+	bricks: generateBricks(),
 	ball: {
 		x: canvas.width / 2,
 		y: canvas.height - 30,
