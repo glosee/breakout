@@ -9,7 +9,7 @@ if (ENV !== 'production') {
 	document.body.appendChild(lrScript);
 }
 
-// Get the canvs element to draw the game into
+// Get the canvas element to draw the game into
 const canvas = document.getElementById('main');
 const end = startGame(canvas, 15);
 console.log(end);

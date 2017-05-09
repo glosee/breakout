@@ -52,10 +52,13 @@ const draw = (ctx, state) => {
 		}
 	});
 
+	const moveBall = ({ ball }) => {
+		return {
+			x: ball.x + bx,
+			y: ball.y + by,
+		};
+	};
 
-	/**
-	 *
-	 */
 	const brickCollision = ({ball, bricks}) => {
 		if (!bricks) {
 			return;
@@ -69,7 +72,8 @@ const draw = (ctx, state) => {
 						ball.y > brick.y &&
 						ball.y < brick.y + brick.h
 				) {
-					console.log('hit a brick!', brick);
+					// TODO: This is impure. You can't adjust the ball direction inside
+					// this function
 					by = -by;
 					return Object.assign(brick, { status: 0 });
 				}
@@ -81,22 +85,30 @@ const draw = (ctx, state) => {
 	const nextFrame = () => {
 		const { ball, canvasSize, user, paddle } = state;
 
-		// If the ball hits the wall on any side of the canvas then reverse direction on that axis
+		// If the ball hits the wall on any side of the canvas then reverse
+		// direction on the x axis.
 		if (ball.x + bx > canvasSize.w - ball.r || ball.x + bx < ball.r) {
 			bx = -bx;
 		}
 
+		// If the ball hits the ceiling, then reverse direction on the y axis
 		if (ball.y + by < ball.r) {
 			by = -by;
+		// If the ball hits the bottom of the canvas...
 		} else if (ball.y + by > canvasSize.h - ball.r) {
+			// ... and it's within the bounds of the paddle, then reverse direction
+			// on the y axis
 			if (ball.x > paddle.x && ball.x < paddle.x + paddle.w) {
 				by = -by;
 			} else {
+				// Otherwise you are out of luck!
 				window.location.reload();
 			}
 		}
-		state.ball.x += bx;
-		state.ball.y += by;
+
+		// Increase ball position
+		state.ball = Object.assign(state.ball, moveBall(state));
+
 		// If the user is pressing a key then move the paddle
 		if (user.keys.right && paddle.x < canvasSize.w - paddle.w) {
 			state.paddle.x += px;
@@ -156,7 +168,7 @@ const initialState = canvas => ({
 		w: 75,
 		h: 10,
 		x: ((canvas.width - 75) / 2),
-		y: (canvas.height - 20),
+		y: (canvas.height - 10),
 	},
 	canvasSize: {
 		w: canvas.width,
