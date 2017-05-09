@@ -30,8 +30,17 @@ const draw = (ctx, state) => {
 		for (let c = 0; c < config.brick.colCount; c++) {
 			state.bricks[c] = [];
 			for (let r = 0; r < config.brick.rowCount; r++) {
-				const brick = Object.assign({}, getBrickPos(c, r), { w: config.brick.w, h: config.brick.h });
-				drawBrick(brick);
+				const brick = Object.assign(
+					{},
+					(state.bricks[c] && state.bricks[c][r]) ? state.bricks[c][r] : getBrickPos(c, r),
+					{
+						w: config.brick.w,
+						h: config.brick.h,
+					}
+				);
+				if (brick.status > 0) {
+					drawBrick(brick);
+				}
 				state.bricks[c][r] = brick;
 			}
 		}
@@ -53,19 +62,44 @@ const draw = (ctx, state) => {
 		}
 	});
 
+	const brickCollision = (ball) => {
+		for (let c = 0; c < state.bricks.length; c++) {
+			for (let r = 0; r < state.bricks[c].length; r++) {
+				const brick = state.bricks[c] && state.bricks[c][r];
+				if (!brick) {
+					return;
+				}
+				if (
+					ball.x > brick.x &&
+					ball.x < brick.x + brick.w &&
+					ball.y > brick.y &&
+					ball.y < brick.y + brick.h
+				) {
+					console.log('hit a brick!', brick);
+					by = -by;
+					state.bricks[c][r].status = 0;
+				}
+			}
+		}
+	};
+
 	const nextFrame = () => {
 		const { ball, canvasSize, user, paddle } = state;
+
 		// If the ball hits the wall on any side of the canvas then reverse direction on that axis
 		if (ball.x + bx > canvasSize.w - ball.r || ball.x + bx < ball.r) {
 			bx = -bx;
 		}
+
 		if (ball.y + by < ball.r) {
 			by = -by;
 		} else if (ball.y + by > canvasSize.h - ball.r) {
 			if (ball.x > paddle.x && ball.x < paddle.x + paddle.w) {
 				by = -by;
 			} else {
-				window.location.reload();
+				// window.location.reload();
+				// alert('game over');
+				console.warn('game over...');
 			}
 		}
 		state.ball.x += bx;
@@ -76,6 +110,7 @@ const draw = (ctx, state) => {
 		} else if (user.keys.left && paddle.x > 0) {
 			state.paddle.x -= px;
 		}
+		brickCollision(state.ball);
 		return state;
 	};
 
@@ -85,7 +120,7 @@ const draw = (ctx, state) => {
 		const next = nextFrame();
 		drawBall(next.ball);
 		drawPaddle(next.paddle);
-		drawBricks();
+		drawBricks(next.bricks);
 	};
 };
 

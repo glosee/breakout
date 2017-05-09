@@ -54,5 +54,6 @@ export const getBrickPos = (col, row) => {
 	return {
 		x: (col * (brick.w + brick.padding)) + brick.offsetLeft,
 		y: (row * (brick.h + brick.padding)) + brick.offsetTop,
+		status: 1,
 	};
 };
