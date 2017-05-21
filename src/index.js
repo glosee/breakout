@@ -11,5 +11,4 @@ if (ENV !== 'production') {
 
 // Get the canvas element to draw the game into
 const canvas = document.getElementById('main');
-const end = startGame(canvas, 15);
-console.log(end);
+startGame(canvas, 15);
